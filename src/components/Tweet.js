@@ -4,11 +4,27 @@ import { formatTweet, formatDate } from "../utils/helpers";
 import { TiArrowBackOutline } from "react-icons/ti/index";
 import { TiHeartOutline } from "react-icons/ti/index";
 import { TiHeartFullOutline } from "react-icons/ti/index";
+import { handleToggleTweet } from "../actions/tweets";
 
 class Tweet extends React.Component {
   toParent = (e, id) => {
     e.preventDefault();
     //Redirec to parent Tweet
+  };
+
+  handleLike = (e) => {
+    e.preventDefault();
+
+    // todo: Handle Like Tweet
+    const { dispatch, tweet, authedUser } = this.props;
+
+    dispatch(
+      handleToggleTweet({
+        id: tweet.id,
+        hasLiked: tweet.hasLiked,
+        authedUser,
+      })
+    );
   };
 
   render() {
@@ -30,17 +46,31 @@ class Tweet extends React.Component {
       <div className="tweet">
         <img src={avatar} alt={`Avatar of ${name}`} className="avatar" />
         <div className="tweet-info">
-          <span>{name}</span>
-          <div>{formatDate(timestamp)}</div>
-          {parent && (
-            <button
-              className="replying-to"
-              onClick={(e) => this.toParent(e, parent.id)}
-            >
-              Replying to @{parent.author}
+          <div>
+            <span>{name}</span>
+            <div>{formatDate(timestamp)}</div>
+            {parent && (
+              <button
+                className="replying-to"
+                onClick={(e) => this.toParent(e, parent.id)}
+              >
+                Replying to @{parent.author}
+              </button>
+            )}
+            <p>{text}</p>
+          </div>
+          <div className="tweet-icons">
+            <TiArrowBackOutline className="tweet-icon" />
+            <span>{replies !== 0 && replies}</span>
+            <button className="heart-button" onClick={this.handleLike}>
+              {hasLiked === true ? (
+                <TiHeartFullOutline color="#e0245e" className="tweet-icon" />
+              ) : (
+                <TiHeartOutline className="tweet-icon" />
+              )}
             </button>
-          )}
-          <p>{text}</p>
+            <span>{likes !== 0 && likes}</span>
+          </div>
         </div>
       </div>
     );
